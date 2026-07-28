@@ -10,7 +10,7 @@
     "format": "biome format --write"
   },
   "dependencies": {
-    "next": "15.3.3",
+    "next": "15.3.8",
     "qrcode.react": "^4.2.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
