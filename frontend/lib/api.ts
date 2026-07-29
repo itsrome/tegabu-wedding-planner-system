@@ -1,17 +1,19 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-function getAuthHeaders() {
+function getAuthHeaders(): Record<string, string> {
   const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
   return token ? { 'Authorization': `Bearer ${token}` } : {};
 }
 
 export async function fetchAPI(endpoint: string, options?: RequestInit) {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...getAuthHeaders(),
+    ...(options?.headers as Record<string, string>),
+  };
   const response = await fetch(`${API_URL}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...getAuthHeaders(),
-      ...options?.headers,
-    },
+    ...options,
+    headers,
     ...options,
   });
 
