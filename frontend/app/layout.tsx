@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import KeepAlive from "@/components/KeepAlive";
 
 export const metadata: Metadata = {
-  title: "Wedding Planner",
+  title: "Tegabu Wedding Planner",
   description: "Plan your perfect wedding day",
 };
 
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <KeepAlive />
         {children}
       </body>
     </html>

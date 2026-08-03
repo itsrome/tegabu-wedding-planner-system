@@ -11,6 +11,12 @@ class VendorSeeder extends Seeder
 {
     public function run(): void
     {
+        // Only seed if no vendors exist
+        if (VendorProfile::count() > 0) {
+            $this->command->info('Vendors already seeded, skipping.');
+            return;
+        }
+
         $vendors = [
             // Photography
             ['category' => 'Photography', 'business_name' => 'Golden Lens Studios', 'description' => 'Award-winning wedding photographers capturing your most precious moments with artistic flair.', 'location' => 'Addis Ababa', 'starting_price' => 1500, 'rating' => 4.9],
