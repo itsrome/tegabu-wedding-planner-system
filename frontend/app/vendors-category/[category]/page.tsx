@@ -50,9 +50,25 @@ export default function CategoryVendorsPage() {
 
   const loadVendors = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/vendor-profiles?category=${params.category}`);
+      const response = await fetch(`${API_URL}/vendor-profiles`);
       const data = await response.json();
-      setVendors(data);
+      // Filter by category matching (case-insensitive, handle Music & Entertainment -> music)
+      const categoryMap: any = {
+        venue: 'Venue',
+        catering: 'Catering',
+        photography: 'Photography',
+        videography: 'Videography',
+        music: 'Music & Entertainment',
+        decoration: 'Decoration',
+        makeup: 'Hair & Makeup',
+        transportation: 'Transportation',
+        cake: 'Wedding Cake',
+      };
+      const mappedCategory = categoryMap[params.category as string];
+      const filtered = mappedCategory 
+        ? data.filter((v: any) => v.category === mappedCategory)
+        : data;
+      setVendors(filtered);
     } catch (error) {
       console.error('Failed to load vendors:', error);
     } finally {
