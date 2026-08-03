@@ -99,7 +99,7 @@ export default function MessagesPage() {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch('${API_URL}/users', {
+      const response = await fetch(`${API_URL}/users`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       
@@ -145,7 +145,7 @@ export default function MessagesPage() {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('${API_URL}/messages', {
+      const response = await fetch(`${API_URL}/messages`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -166,7 +166,7 @@ export default function MessagesPage() {
         
         // Find the conversation with this recipient and select it
         if (recipientId) {
-          const convs = await fetch('${API_URL}/conversations', {
+          const convs = await fetch(`${API_URL}/conversations`, {
             headers: { 'Authorization': `Bearer ${token}` },
           }).then(r => r.json());
           
