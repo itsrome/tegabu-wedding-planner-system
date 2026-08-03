@@ -27,7 +27,7 @@ export default function InspirationBoard() {
 
   const fetchImages = async () => {
     const token = localStorage.getItem('auth_token');
-    const res = await fetch('${API_URL}/inspiration', {
+    const res = await fetch(`${API_URL}/inspiration`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -44,7 +44,7 @@ export default function InspirationBoard() {
     const token = localStorage.getItem('auth_token');
     
     try {
-      const res = await fetch('${API_URL}/inspiration', {
+      const res = await fetch(`${API_URL}/inspiration`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

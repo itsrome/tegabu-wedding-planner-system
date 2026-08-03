@@ -51,7 +51,7 @@ export default function BookingsPage() {
   const loadBookings = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('${API_URL}/bookings', {
+      const response = await fetch(`${API_URL}/bookings`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -94,7 +94,7 @@ export default function BookingsPage() {
   const submitReview = async (bookingId: number) => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('${API_URL}/reviews', {
+      const response = await fetch(`${API_URL}/reviews`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
