@@ -23,7 +23,18 @@ export default function LoginPage() {
       const response = await authAPI.login(formData);
       localStorage.setItem('auth_token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
-      router.push('/');
+      
+      // Redirect based on role
+      const role = response.user.role;
+      if (role === 'admin') {
+        router.push('/admin');
+      } else if (role === 'vendor') {
+        router.push('/vendor-dashboard');
+      } else if (role === 'wedding_planner') {
+        router.push('/planner-dashboard');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       setError('Invalid email or password');
     } finally {
