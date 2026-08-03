@@ -1,5 +1,7 @@
 'use client';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tegabu-wedding-planner-system.onrender.com/api';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -49,7 +51,7 @@ export default function BookingsPage() {
   const loadBookings = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:8000/api/bookings', {
+      const response = await fetch('${API_URL}/bookings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -92,7 +94,7 @@ export default function BookingsPage() {
   const submitReview = async (bookingId: number) => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:8000/api/reviews', {
+      const response = await fetch('${API_URL}/reviews', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

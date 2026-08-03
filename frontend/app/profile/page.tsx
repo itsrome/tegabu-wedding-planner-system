@@ -1,5 +1,7 @@
 'use client';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tegabu-wedding-planner-system.onrender.com/api';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -24,7 +26,7 @@ export default function ProfilePage() {
   const loadProfile = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:8000/api/user', {
+      const response = await fetch('${API_URL}/user', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const user = await response.json();
@@ -48,7 +50,7 @@ export default function ProfilePage() {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:8000/api/user/update', {
+      const response = await fetch('${API_URL}/user/update', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

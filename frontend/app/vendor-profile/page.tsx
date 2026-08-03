@@ -1,5 +1,7 @@
 'use client';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tegabu-wedding-planner-system.onrender.com/api';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -39,7 +41,7 @@ export default function VendorProfilePage() {
   const loadProfile = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:8000/api/my-vendor-profile', {
+      const response = await fetch('${API_URL}/my-vendor-profile', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
@@ -70,8 +72,8 @@ export default function VendorProfilePage() {
     try {
       const token = localStorage.getItem('auth_token');
       const url = profile 
-        ? `http://localhost:8000/api/vendor-profiles/${profile.id}`
-        : 'http://localhost:8000/api/vendor-profiles';
+        ? `${API_URL}/vendor-profiles/${profile.id}`
+        : '${API_URL}/vendor-profiles';
       
       const response = await fetch(url, {
         method: profile ? 'PUT' : 'POST',

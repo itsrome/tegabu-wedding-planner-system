@@ -1,5 +1,7 @@
 'use client';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tegabu-wedding-planner-system.onrender.com/api';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -64,7 +66,7 @@ export default function MessagesPage() {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch('http://localhost:8000/api/conversations', {
+      const response = await fetch('${API_URL}/conversations', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       
@@ -97,7 +99,7 @@ export default function MessagesPage() {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch('http://localhost:8000/api/users', {
+      const response = await fetch('${API_URL}/users', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       
@@ -127,7 +129,7 @@ export default function MessagesPage() {
   const loadMessages = async (conversationId: number) => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:8000/api/conversations/${conversationId}/messages`, {
+      const response = await fetch(`${API_URL}/conversations/${conversationId}/messages`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();
@@ -143,7 +145,7 @@ export default function MessagesPage() {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('http://localhost:8000/api/messages', {
+      const response = await fetch('${API_URL}/messages', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -164,7 +166,7 @@ export default function MessagesPage() {
         
         // Find the conversation with this recipient and select it
         if (recipientId) {
-          const convs = await fetch('http://localhost:8000/api/conversations', {
+          const convs = await fetch('${API_URL}/conversations', {
             headers: { 'Authorization': `Bearer ${token}` },
           }).then(r => r.json());
           

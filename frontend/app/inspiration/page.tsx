@@ -1,5 +1,7 @@
 'use client';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tegabu-wedding-planner-system.onrender.com/api';
+
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 
@@ -25,7 +27,7 @@ export default function InspirationBoard() {
 
   const fetchImages = async () => {
     const token = localStorage.getItem('auth_token');
-    const res = await fetch('http://localhost:8000/api/inspiration', {
+    const res = await fetch('${API_URL}/inspiration', {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -42,7 +44,7 @@ export default function InspirationBoard() {
     const token = localStorage.getItem('auth_token');
     
     try {
-      const res = await fetch('http://localhost:8000/api/inspiration', {
+      const res = await fetch('${API_URL}/inspiration', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -69,7 +71,7 @@ export default function InspirationBoard() {
     if (!confirm('Delete this image?')) return;
     
     const token = localStorage.getItem('auth_token');
-    await fetch(`http://localhost:8000/api/inspiration/${id}`, {
+    await fetch(`${API_URL}/inspiration/${id}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -152,7 +154,7 @@ export default function InspirationBoard() {
             <div key={img.id} className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
               <div className="relative overflow-hidden">
                 <img
-                  src={`http://localhost:8000/storage/${img.image_path}`}
+                  src={`https://tegabu-wedding-planner-system.onrender.com/storage/${img.image_path}`}
                   alt={img.title || 'Inspiration'}
                   className="w-full h-72 object-cover group-hover:scale-110 transition-transform duration-500"
                 />

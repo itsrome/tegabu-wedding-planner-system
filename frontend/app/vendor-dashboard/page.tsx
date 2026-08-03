@@ -1,5 +1,7 @@
 'use client';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tegabu-wedding-planner-system.onrender.com/api';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -36,7 +38,7 @@ export default function VendorDashboardPage() {
       const token = localStorage.getItem('auth_token');
       
       // Load bookings
-      const bookingsRes = await fetch('http://localhost:8000/api/bookings', {
+      const bookingsRes = await fetch('${API_URL}/bookings', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (bookingsRes.ok) {
@@ -45,7 +47,7 @@ export default function VendorDashboardPage() {
       }
 
       // Load vendor profile
-      const profileRes = await fetch('http://localhost:8000/api/my-vendor-profile', {
+      const profileRes = await fetch('${API_URL}/my-vendor-profile', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (profileRes.ok) {
@@ -63,7 +65,7 @@ export default function VendorDashboardPage() {
     setUpdatingBooking(bookingId);
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(`http://localhost:8000/api/bookings/${bookingId}/status`, {
+      const response = await fetch(`${API_URL}/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -1,5 +1,7 @@
 'use client';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tegabu-wedding-planner-system.onrender.com/api';
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -66,7 +68,7 @@ export default function DashboardPage() {
 
       // Load guests
       try {
-        const guestsRes = await fetch('http://localhost:8000/api/guests', {
+        const guestsRes = await fetch('${API_URL}/guests', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (guestsRes.status === 401 || guestsRes.status === 500) {
@@ -97,7 +99,7 @@ export default function DashboardPage() {
       
       // Load budget
       try {
-        const budgetRes = await fetch('http://localhost:8000/api/budget/summary', {
+        const budgetRes = await fetch('${API_URL}/budget/summary', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (budgetRes.ok) {
@@ -118,7 +120,7 @@ export default function DashboardPage() {
       
       // Load tasks
       try {
-        const tasksRes = await fetch('http://localhost:8000/api/tasks', {
+        const tasksRes = await fetch('${API_URL}/tasks', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (tasksRes.ok) {
@@ -139,7 +141,7 @@ export default function DashboardPage() {
 
       // Load bookings
       try {
-        const bookingsRes = await fetch('http://localhost:8000/api/bookings', {
+        const bookingsRes = await fetch('${API_URL}/bookings', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (bookingsRes.ok) {
