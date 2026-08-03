@@ -16,60 +16,40 @@ interface VendorProfile {
   rating: number;
   total_bookings: number;
   is_verified: boolean;
-  user: {
-    name: string;
-    email: string;
-  };
+  user: { name: string; email: string };
 }
+
+const categoryConfig: Record<string, { icon: string; color: string }> = {
+  'Photography':        { icon: '📸', color: 'from-blue-400 to-blue-500' },
+  'Catering':           { icon: '🍽️', color: 'from-orange-400 to-orange-500' },
+  'Venue':              { icon: '🏛️', color: 'from-purple-400 to-purple-500' },
+  'Music & Entertainment': { icon: '🎵', color: 'from-green-400 to-green-500' },
+  'Decoration':         { icon: '🎨', color: 'from-yellow-400 to-yellow-500' },
+  'Wedding Cake':       { icon: '🎂', color: 'from-pink-400 to-pink-500' },
+  'Transportation':     { icon: '🚗', color: 'from-gray-400 to-gray-500' },
+  'Hair & Makeup':      { icon: '💄', color: 'from-rose-400 to-rose-500' },
+  'Videography':        { icon: '🎥', color: 'from-indigo-400 to-indigo-500' },
+};
 
 export default function MarketplacePage() {
   const router = useRouter();
   const [vendors, setVendors] = useState<VendorProfile[]>([]);
-  const [filteredVendors, setFilteredVendors] = useState<VendorProfile[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchLocation, setSearchLocation] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadVendors();
-  }, []);
-
-  useEffect(() => {
-    filterVendors();
-  }, [selectedCategory, searchLocation, vendors]);
+  useEffect(() => { loadVendors(); }, []);
 
   const loadVendors = async () => {
     try {
       const response = await fetch(`${API_URL}/vendor-profiles`);
-      if (!response.ok) {
-        console.error('Failed to load vendors - Status:', response.status);
-        setLoading(false);
-        return;
-      }
+      if (!response.ok) { setLoading(false); return; }
       const data = await response.json();
       setVendors(data);
-      setFilteredVendors(data);
     } catch (error) {
       console.error('Failed to load vendors:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const filterVendors = () => {
-    let filtered = vendors;
-
-    if (selectedCategory !== 'all') {
-      filtered = filtered.filter(v => v.category === selectedCategory);
-    }
-
-    if (searchLocation) {
-      filtered = filtered.filter(v => 
-        v.location.toLowerCase().includes(searchLocation.toLowerCase())
-      );
-    }
-
-    setFilteredVendors(filtered);
   };
 
   const handleLogout = () => {
@@ -78,21 +58,19 @@ export default function MarketplacePage() {
     router.push('/login');
   };
 
-  const categories = [
-    { value: 'all', label: 'All Categories', icon: '🎯' },
-    { value: 'venue', label: 'Venues', icon: '🏛️' },
-    { value: 'catering', label: 'Catering', icon: '🍽️' },
-    { value: 'photography', label: 'Photography', icon: '📸' },
-    { value: 'videography', label: 'Videography', icon: '🎥' },
-    { value: 'florist', label: 'Florist', icon: '💐' },
-    { value: 'music', label: 'Music/DJ', icon: '🎵' },
-    { value: 'decoration', label: 'Decoration', icon: '🎨' },
-    { value: 'makeup', label: 'Makeup', icon: '💄' },
-    { value: 'transportation', label: 'Transportation', icon: '🚗' },
-  ];
+  const filteredVendors = searchLocation
+    ? vendors.filter(v => v.location.toLowerCase().includes(searchLocation.toLowerCase()))
+    : vendors;
+
+  // Group vendors by category
+  const grouped = Object.keys(categoryConfig).reduce((acc, cat) => {
+    const list = filteredVendors.filter(v => v.category === cat);
+    if (list.length > 0) acc[cat] = list;
+    return acc;
+  }, {} as Record<string, VendorProfile[]>);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-xl">Loading vendors...</div>;
   }
 
   return (
@@ -101,32 +79,18 @@ export default function MarketplacePage() {
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl">💐</span>
-            <span className="text-2xl font-serif bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent" style={{ letterSpacing: '0.05em' }}>Tegabu</span>
+            <span className="text-2xl font-serif bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">Tegabu</span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/vendors-category" className="text-gray-600 hover:text-rose-600">
-              Categories
-            </Link>
-            {localStorage.getItem('auth_token') ? (
+            {typeof window !== 'undefined' && localStorage.getItem('auth_token') ? (
               <>
-                <Link href="/dashboard" className="text-gray-600 hover:text-rose-600">
-                  Dashboard
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors text-sm"
-                >
-                  Logout
-                </button>
+                <Link href="/dashboard" className="text-gray-600 hover:text-rose-600">Dashboard</Link>
+                <button onClick={handleLogout} className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 text-sm">Logout</button>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-gray-600 hover:text-rose-600">
-                  Login
-                </Link>
-                <Link href="/register" className="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600 transition-colors text-sm">
-                  Sign Up
-                </Link>
+                <Link href="/login" className="text-gray-600 hover:text-rose-600">Login</Link>
+                <Link href="/register" className="bg-rose-500 text-white px-4 py-2 rounded-lg hover:bg-rose-600 text-sm">Sign Up</Link>
               </>
             )}
           </div>
@@ -136,86 +100,68 @@ export default function MarketplacePage() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-bold mb-2">Vendor Marketplace</h1>
-          <p className="text-gray-600">Browse and book wedding vendors</p>
+          <p className="text-gray-600">Browse wedding vendors by category</p>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category
-              </label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                {categories.map(cat => (
-                  <option key={cat.value} value={cat.value}>
-                    {cat.icon} {cat.label}
-                  </option>
+        {/* Search */}
+        <div className="bg-white rounded-lg shadow p-4 mb-8">
+          <input
+            type="text"
+            value={searchLocation}
+            onChange={(e) => setSearchLocation(e.target.value)}
+            placeholder="🔍 Search by location..."
+            className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-rose-500"
+          />
+        </div>
+
+        {/* Grouped by Category */}
+        {Object.entries(grouped).map(([category, vendorList]) => {
+          const config = categoryConfig[category];
+          return (
+            <div key={category} className="mb-12">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-3xl">{config.icon}</span>
+                <h2 className="text-2xl font-bold text-gray-800">{category}</h2>
+                <span className="text-gray-500 text-sm">({vendorList.length} vendors)</span>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {vendorList.map((vendor) => (
+                  <Link
+                    key={vendor.id}
+                    href={`/marketplace/${vendor.id}`}
+                    className="bg-white rounded-lg shadow hover:shadow-xl transition-shadow overflow-hidden"
+                  >
+                    <div className={`h-36 bg-gradient-to-br ${config.color} flex items-center justify-center text-5xl`}>
+                      {config.icon}
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-start justify-between mb-1">
+                        <h3 className="font-semibold text-gray-800 text-sm leading-tight">{vendor.business_name}</h3>
+                        {vendor.is_verified && <span className="text-blue-500 text-sm ml-1">✓</span>}
+                      </div>
+                      <p className="text-gray-600 text-xs mb-2 line-clamp-2">{vendor.description}</p>
+                      <div className="flex items-center gap-1 text-xs mb-2">
+                        <span className="text-yellow-500">⭐</span>
+                        <span className="font-semibold">{Number(vendor.rating).toFixed(1)}</span>
+                        <span className="text-gray-400">({vendor.total_bookings})</span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs pt-2 border-t">
+                        <span className="text-gray-500">📍 {vendor.location}</span>
+                        <span className="font-bold text-green-600">From ${Number(vendor.starting_price).toFixed(0)}</span>
+                      </div>
+                    </div>
+                  </Link>
                 ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Location
-              </label>
-              <input
-                type="text"
-                value={searchLocation}
-                onChange={(e) => setSearchLocation(e.target.value)}
-                placeholder="Search by location..."
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Vendor Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredVendors.map((vendor) => (
-            <Link
-              key={vendor.id}
-              href={`/marketplace/${vendor.id}`}
-              className="bg-white rounded-lg shadow hover:shadow-xl transition-shadow overflow-hidden"
-            >
-              <div className="h-48 bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-6xl">
-                {categories.find(c => c.value === vendor.category)?.icon || '🎉'}
               </div>
-              <div className="p-6">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-xl font-semibold">{vendor.business_name}</h3>
-                  {vendor.is_verified && (
-                    <span className="text-blue-500 text-xl" title="Verified">✓</span>
-                  )}
-                </div>
-                <p className="text-sm text-gray-600 capitalize mb-2">{vendor.category}</p>
-                <p className="text-gray-700 mb-3 line-clamp-2">{vendor.description}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-1">
-                    <span className="text-yellow-500">⭐</span>
-                    <span className="font-semibold">{Number(vendor.rating).toFixed(1)}</span>
-                    <span className="text-gray-500">({vendor.total_bookings} bookings)</span>
-                  </div>
-                </div>
-                <div className="mt-3 pt-3 border-t flex items-center justify-between">
-                  <span className="text-gray-600">📍 {vendor.location}</span>
-                  <span className="font-semibold text-green-600">
-                    From ${Number(vendor.starting_price).toFixed(0)}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+            </div>
+          );
+        })}
 
-        {filteredVendors.length === 0 && (
+        {Object.keys(grouped).length === 0 && (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🔍</div>
             <h3 className="text-xl font-semibold mb-2">No vendors found</h3>
-            <p className="text-gray-600">Try adjusting your filters</p>
+            <p className="text-gray-600">Try a different location</p>
           </div>
         )}
       </div>
