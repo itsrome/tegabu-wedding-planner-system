@@ -47,7 +47,7 @@ export default function AdminBookingsPage() {
   const loadBookings = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const res = await fetch('${API_URL}/admin/bookings', {
+      const res = await fetch(`${API_URL}/admin/bookings`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

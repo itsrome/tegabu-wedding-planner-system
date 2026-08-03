@@ -41,7 +41,7 @@ export default function VendorProfilePage() {
   const loadProfile = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch('${API_URL}/my-vendor-profile', {
+      const response = await fetch(\\\$\{API_URL\}/my-vendor-profile', {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       const data = await response.json();

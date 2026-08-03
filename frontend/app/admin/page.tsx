@@ -58,7 +58,7 @@ export default function AdminDashboard() {
       const token = localStorage.getItem('auth_token');
       
       // Load stats
-      const statsRes = await fetch('${API_URL}/admin/stats', {
+      const statsRes = await fetch(`${API_URL}/admin/stats`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (statsRes.ok) {
@@ -67,7 +67,7 @@ export default function AdminDashboard() {
       }
       
       // Load all users
-      const usersRes = await fetch('${API_URL}/users', {
+      const usersRes = await fetch(`${API_URL}/users`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (usersRes.ok) {
