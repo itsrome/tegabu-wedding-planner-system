@@ -5,353 +5,212 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://tegabu-wedding-plann
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Navbar from '@/components/Navbar';
-import AuthCheck from '@/components/AuthCheck';
-
-interface Stats {
-  guests: {
-    total: number;
-    confirmed: number;
-    pending: number;
-    declined: number;
-  };
-  budget: {
-    estimated: number;
-    actual: number;
-    remaining: number;
-    paid: number;
-  };
-  tasks: {
-    total: number;
-    pending: number;
-    in_progress: number;
-    completed: number;
-  };
-  bookings: number;
-}
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [stats, setStats] = useState<Stats>({
-    guests: { total: 0, confirmed: 0, pending: 0, declined: 0 },
-    budget: { estimated: 0, actual: 0, remaining: 0, paid: 0 },
-    tasks: { total: 0, pending: 0, in_progress: 0, completed: 0 },
-    bookings: 0,
-  });
-  const [weddingDate, setWeddingDate] = useState<string>('');
-  const [daysUntil, setDaysUntil] = useState<number | null>(null);
+  const [stats, setStats] = useState({ guests: 0, bookings: 0, tasks: 0, messages: 0 });
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState('');
+  const [weddingDate, setWeddingDate] = useState('');
+  const [daysUntil, setDaysUntil] = useState<number | null>(null);
 
   useEffect(() => {
-    loadDashboard();
+    const token = localStorage.getItem('auth_token');
+    if (!token) { router.push('/login'); return; }
+    const user = localStorage.getItem('user');
+    if (user) {
+      const u = JSON.parse(user);
+      setUserName(u.name);
+      if (u.wedding_date) {
+        setWeddingDate(u.wedding_date);
+        const diff = Math.ceil((new Date(u.wedding_date).getTime() - Date.now()) / 86400000);
+        setDaysUntil(diff);
+      }
+    }
+    loadAll(token);
   }, []);
 
-  const loadDashboard = async () => {
+  const loadAll = async (token: string) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        router.push('/login');
-        return;
-      }
+      const headers = { 'Authorization': `Bearer ${token}` };
 
-      const user = localStorage.getItem('user');
-      
-      if (user) {
-        const userData = JSON.parse(user);
-        setUserName(userData.name);
-        if (userData.wedding_date) {
-          setWeddingDate(userData.wedding_date);
-          calculateDaysUntil(userData.wedding_date);
-        }
-      }
+      const [bookingsRes, tasksRes, convsRes, guestsRes] = await Promise.all([
+        fetch(`${API_URL}/bookings`, { headers }),
+        fetch(`${API_URL}/tasks`, { headers }),
+        fetch(`${API_URL}/conversations`, { headers }),
+        fetch(`${API_URL}/guests`, { headers }),
+      ]);
 
-      // Load guests
-      try {
-        const guestsRes = await fetch('${API_URL}/guests', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (guestsRes.status === 401 || guestsRes.status === 500) {
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('user');
-          router.push('/login');
-          return;
-        }
-        if (guestsRes.ok) {
-          const guests = await guestsRes.json();
-          setStats(prev => ({
-            ...prev,
-            guests: {
-              total: guests.length,
-              confirmed: guests.filter((g: any) => g.rsvp_status === 'confirmed').length,
-              pending: guests.filter((g: any) => g.rsvp_status === 'pending').length,
-              declined: guests.filter((g: any) => g.rsvp_status === 'declined').length,
-            }
-          }));
-        }
-      } catch (err) {
-        console.error('Failed to load guests:', err);
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user');
-        router.push('/login');
-        return;
-      }
-      
-      // Load budget
-      try {
-        const budgetRes = await fetch('${API_URL}/budget/summary', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (budgetRes.ok) {
-          const budget = await budgetRes.json();
-          setStats(prev => ({
-            ...prev,
-            budget: {
-              estimated: budget.total_estimated || 0,
-              actual: budget.total_actual || 0,
-              remaining: budget.remaining || 0,
-              paid: budget.total_paid || 0,
-            }
-          }));
-        }
-      } catch (err) {
-        console.error('Failed to load budget:', err);
-      }
-      
-      // Load tasks
-      try {
-        const tasksRes = await fetch('${API_URL}/tasks', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (tasksRes.ok) {
-          const tasks = await tasksRes.json();
-          setStats(prev => ({
-            ...prev,
-            tasks: {
-              total: tasks.length,
-              pending: tasks.filter((t: any) => t.status === 'pending').length,
-              in_progress: tasks.filter((t: any) => t.status === 'in_progress').length,
-              completed: tasks.filter((t: any) => t.status === 'completed').length,
-            }
-          }));
-        }
-      } catch (err) {
-        console.error('Failed to load tasks:', err);
-      }
+      if (bookingsRes.status === 401) { router.push('/login'); return; }
 
-      // Load bookings
-      try {
-        const bookingsRes = await fetch('${API_URL}/bookings', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (bookingsRes.ok) {
-          const bookings = await bookingsRes.json();
-          setStats(prev => ({
-            ...prev,
-            bookings: Array.isArray(bookings) ? bookings.length : 0
-          }));
-        }
-      } catch (err) {
-        console.error('Failed to load bookings:', err);
-      }
+      const bookingsData = bookingsRes.ok ? await bookingsRes.json() : [];
+      const tasksData = tasksRes.ok ? await tasksRes.json() : [];
+      const convsData = convsRes.ok ? await convsRes.json() : [];
+      const guestsData = guestsRes.ok ? await guestsRes.json() : [];
 
-    } catch (error) {
-      console.error('Failed to load dashboard:', error);
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user');
-      router.push('/login');
+      setBookings(Array.isArray(bookingsData) ? bookingsData.slice(0, 5) : []);
+      setTasks(Array.isArray(tasksData) ? tasksData.slice(0, 5) : []);
+      setConversations(Array.isArray(convsData) ? convsData.slice(0, 5) : []);
+      setStats({
+        guests: Array.isArray(guestsData) ? guestsData.length : 0,
+        bookings: Array.isArray(bookingsData) ? bookingsData.length : 0,
+        tasks: Array.isArray(tasksData) ? tasksData.length : 0,
+        messages: Array.isArray(convsData) ? convsData.length : 0,
+      });
+    } catch (e) {
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
-  const calculateDaysUntil = (date: string) => {
-    const wedding = new Date(date);
-    const today = new Date();
-    const diff = wedding.getTime() - today.getTime();
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    setDaysUntil(days);
-  };
-
-  if (loading) {
-    return (
-      <AuthCheck>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-5xl mb-4">💐</div>
-            <div className="text-xl text-gray-600">Loading your dashboard...</div>
-          </div>
-        </div>
-      </AuthCheck>
-    );
-  }
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-xl">Loading dashboard...</div>;
 
   return (
-    <AuthCheck>
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50">
-        <Navbar />
+    <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50">
+      {/* Navbar */}
+      <nav className="bg-white shadow-sm border-b">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <Link href="/" className="flex items-center gap-2">
+            <span className="text-2xl">💐</span>
+            <span className="text-2xl font-serif bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">Tegabu</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <span className="text-gray-600 text-sm">👋 {userName}</span>
+            <button onClick={() => { localStorage.clear(); router.push('/login'); }} className="bg-red-500 text-white px-3 py-1 rounded text-sm">Logout</button>
+          </div>
+        </div>
+      </nav>
 
-        <div className="container mx-auto px-4 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <Link href="/" className="text-rose-600 hover:text-rose-700 mb-4 inline-block">
-              ← Back to Home
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">My Dashboard</h1>
+
+        {/* Countdown */}
+        {daysUntil !== null && (
+          <div className="bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-6 text-white text-center mb-8">
+            <div className="text-5xl font-bold">{daysUntil > 0 ? daysUntil : '🎉'}</div>
+            <div className="text-xl mt-1">{daysUntil > 0 ? 'days until your wedding' : 'Today is your wedding day!'}</div>
+            {weddingDate && <div className="text-sm opacity-80 mt-1">{new Date(weddingDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>}
+          </div>
+        )}
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {[
+            { label: 'Guests', value: stats.guests, icon: '👥', href: '/guests', color: 'rose' },
+            { label: 'Bookings', value: stats.bookings, icon: '📋', href: '/bookings', color: 'blue' },
+            { label: 'Tasks', value: stats.tasks, icon: '✅', href: '/tasks', color: 'green' },
+            { label: 'Chats', value: stats.messages, icon: '💬', href: '/messages', color: 'purple' },
+          ].map(s => (
+            <Link key={s.label} href={s.href} className="bg-white rounded-xl p-5 shadow hover:shadow-lg transition-all text-center">
+              <div className="text-3xl mb-1">{s.icon}</div>
+              <div className="text-3xl font-bold text-gray-800">{s.value}</div>
+              <div className="text-gray-500 text-sm">{s.label}</div>
             </Link>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent mb-2">
-              Wedding Dashboard
-            </h1>
-            <p className="text-gray-600">Your wedding planning at a glance</p>
+          ))}
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Recent Bookings */}
+          <div className="bg-white rounded-xl shadow p-5">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-gray-800">📋 Recent Bookings</h2>
+              <Link href="/bookings" className="text-rose-500 text-sm hover:underline">View all</Link>
+            </div>
+            {bookings.length === 0 ? (
+              <p className="text-gray-500 text-sm">No bookings yet. <Link href="/vendors-category" className="text-rose-500 hover:underline">Browse vendors →</Link></p>
+            ) : (
+              <div className="space-y-3">
+                {bookings.map((b: any) => (
+                  <div key={b.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <div className="font-medium text-sm">{b.vendor_profile?.business_name || 'Vendor'}</div>
+                      <div className="text-xs text-gray-500">{b.event_date ? new Date(b.event_date).toLocaleDateString() : 'No date'}</div>
+                    </div>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      b.status === 'confirmed' ? 'bg-green-100 text-green-700' :
+                      b.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>{b.status}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Wedding Countdown */}
-          {weddingDate && daysUntil !== null && (
-            <div className="bg-gradient-to-r from-rose-500 via-pink-500 to-purple-500 rounded-3xl p-8 text-white text-center mb-8 shadow-2xl">
-              <div className="text-5xl mb-4">💍✨</div>
-              <h2 className="text-3xl font-bold mb-2">
-                {daysUntil > 0 ? `${daysUntil} Days Until Your Big Day!` : 
-                 daysUntil === 0 ? 'Today is Your Wedding Day! 🎉' :
-                 'Congratulations on Your Marriage! 💕'}
-              </h2>
-              <p className="text-xl opacity-90">
-                {new Date(weddingDate).toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </p>
+          {/* Recent Messages */}
+          <div className="bg-white rounded-xl shadow p-5">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-gray-800">💬 Recent Messages</h2>
+              <Link href="/messages" className="text-rose-500 text-sm hover:underline">View all</Link>
             </div>
-          )}
-
-          {/* Stats Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* Guests Card */}
-            <Link href="/guests" className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-4xl">👥</div>
-                <div className="text-3xl font-bold text-rose-600">{stats.guests.total}</div>
+            {conversations.length === 0 ? (
+              <p className="text-gray-500 text-sm">No messages yet. <Link href="/messages" className="text-rose-500 hover:underline">Start a chat →</Link></p>
+            ) : (
+              <div className="space-y-3">
+                {conversations.map((c: any) => (
+                  <Link key={c.id} href="/messages" className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100">
+                    <div className="w-9 h-9 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 font-bold text-sm">
+                      {c.other_user?.name?.charAt(0) || '?'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">{c.other_user?.name || 'User'}</div>
+                      <div className="text-xs text-gray-500 truncate">{c.last_message?.message || 'No messages yet'}</div>
+                    </div>
+                  </Link>
+                ))}
               </div>
-              <h3 className="text-lg font-semibold mb-3 text-gray-800">Guests</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Confirmed:</span>
-                  <span className="font-semibold text-green-600">{stats.guests.confirmed}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Pending:</span>
-                  <span className="font-semibold text-yellow-600">{stats.guests.pending}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Declined:</span>
-                  <span className="font-semibold text-red-600">{stats.guests.declined}</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Budget Card */}
-            <Link href="/budget" className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-4xl">💰</div>
-                <div className="text-3xl font-bold text-rose-600">
-                  ${stats.budget.estimated.toLocaleString()}
-                </div>
-              </div>
-              <h3 className="text-lg font-semibold mb-3 text-gray-800">Budget</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Spent:</span>
-                  <span className="font-semibold text-blue-600">${stats.budget.actual.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Remaining:</span>
-                  <span className="font-semibold text-green-600">${stats.budget.remaining.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Paid:</span>
-                  <span className="font-semibold text-purple-600">${stats.budget.paid.toLocaleString()}</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Tasks Card */}
-            <Link href="/tasks" className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-4xl">✓</div>
-                <div className="text-3xl font-bold text-rose-600">{stats.tasks.total}</div>
-              </div>
-              <h3 className="text-lg font-semibold mb-3 text-gray-800">Tasks</h3>
-              <div className="space-y-1 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Completed:</span>
-                  <span className="font-semibold text-green-600">{stats.tasks.completed}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">In Progress:</span>
-                  <span className="font-semibold text-blue-600">{stats.tasks.in_progress}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Pending:</span>
-                  <span className="font-semibold text-yellow-600">{stats.tasks.pending}</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Bookings Card */}
-            <Link href="/marketplace" className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-4xl">📋</div>
-                <div className="text-3xl font-bold text-rose-600">{stats.bookings}</div>
-              </div>
-              <h3 className="text-lg font-semibold mb-3 text-gray-800">Vendor Bookings</h3>
-              <p className="text-sm text-gray-600">
-                You have {stats.bookings} vendor {stats.bookings === 1 ? 'booking' : 'bookings'}
-              </p>
-              <div className="mt-4">
-                <span className="text-xs text-rose-600 font-semibold">View All →</span>
-              </div>
-            </Link>
+            )}
           </div>
 
-          {/* Quick Actions */}
-          <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h2 className="text-2xl font-bold mb-4 text-gray-800">Quick Actions</h2>
-            <div className="grid md:grid-cols-3 gap-4">
-              <Link
-                href="/guests"
-                className="flex items-center gap-3 p-4 bg-rose-50 rounded-xl hover:bg-rose-100 transition-colors"
-              >
-                <span className="text-3xl">👥</span>
-                <div>
-                  <div className="font-semibold text-gray-800">Add Guest</div>
-                  <div className="text-sm text-gray-600">Manage your guest list</div>
-                </div>
-              </Link>
-
-              <Link
-                href="/tasks"
-                className="flex items-center gap-3 p-4 bg-pink-50 rounded-xl hover:bg-pink-100 transition-colors"
-              >
-                <span className="text-3xl">✓</span>
-                <div>
-                  <div className="font-semibold text-gray-800">Add Task</div>
-                  <div className="text-sm text-gray-600">Stay organized</div>
-                </div>
-              </Link>
-
-              <Link
-                href="/marketplace"
-                className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl hover:bg-purple-100 transition-colors"
-              >
-                <span className="text-3xl">🎊</span>
-                <div>
-                  <div className="font-semibold text-gray-800">Find Vendors</div>
-                  <div className="text-sm text-gray-600">Browse marketplace</div>
-                </div>
-              </Link>
+          {/* Recent Tasks */}
+          <div className="bg-white rounded-xl shadow p-5">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-gray-800">✅ Recent Tasks</h2>
+              <Link href="/tasks" className="text-rose-500 text-sm hover:underline">View all</Link>
             </div>
+            {tasks.length === 0 ? (
+              <p className="text-gray-500 text-sm">No tasks yet. <Link href="/tasks" className="text-rose-500 hover:underline">Add a task →</Link></p>
+            ) : (
+              <div className="space-y-3">
+                {tasks.map((t: any) => (
+                  <div key={t.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <span className={`w-3 h-3 rounded-full flex-shrink-0 ${
+                      t.status === 'completed' ? 'bg-green-500' :
+                      t.status === 'in_progress' ? 'bg-blue-500' : 'bg-yellow-500'
+                    }`}></span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm truncate">{t.title}</div>
+                      <div className="text-xs text-gray-500">{t.status?.replace('_', ' ')}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mt-6 bg-white rounded-xl shadow p-5">
+          <h2 className="text-lg font-bold text-gray-800 mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { href: '/vendors-category', icon: '🛍️', label: 'Find Vendors' },
+              { href: '/guests', icon: '👥', label: 'Manage Guests' },
+              { href: '/budget', icon: '💰', label: 'Budget' },
+              { href: '/inspiration', icon: '✨', label: 'Inspiration' },
+            ].map(a => (
+              <Link key={a.href} href={a.href} className="flex flex-col items-center gap-2 p-4 bg-rose-50 rounded-xl hover:bg-rose-100 transition-colors">
+                <span className="text-2xl">{a.icon}</span>
+                <span className="text-sm font-medium text-gray-700">{a.label}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
-    </AuthCheck>
+    </div>
   );
 }
