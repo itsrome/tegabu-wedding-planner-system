@@ -26,7 +26,7 @@ export default function VendorDetailPage() {
       const token = localStorage.getItem('auth_token');
       if (token) {
         try {
-          const response = await fetch('http://localhost:8000/api/user', {
+          const response = await fetch(`${API_URL}/user`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (!response.ok) {
@@ -49,7 +49,7 @@ export default function VendorDetailPage() {
 
   const loadVendor = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/vendor-profiles/${params.id}`);
+      const response = await fetch(`${API_URL}/vendor-profiles/${params.id}`);
       const data = await response.json();
       setVendor(data);
     } catch (error) {
@@ -71,7 +71,7 @@ export default function VendorDetailPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/bookings', {
+      const response = await fetch(`${API_URL}/bookings`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
