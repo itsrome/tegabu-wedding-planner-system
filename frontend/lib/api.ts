@@ -14,7 +14,6 @@ export async function fetchAPI(endpoint: string, options?: RequestInit) {
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers,
-    ...options,
   });
 
   if (!response.ok) {
@@ -38,7 +37,7 @@ export async function fetchAPI(endpoint: string, options?: RequestInit) {
 }
 
 export const authAPI = {
-  register: (data: { name: string; email: string; password: string; password_confirmation: string }) =>
+  register: (data: { name: string; email: string; password: string; password_confirmation: string; role: string }) =>
     fetchAPI('/register', { method: 'POST', body: JSON.stringify(data) }),
   login: (data: { email: string; password: string }) =>
     fetchAPI('/login', { method: 'POST', body: JSON.stringify(data) }),
