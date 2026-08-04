@@ -66,7 +66,7 @@ export default function MessagesPage() {
       const token = localStorage.getItem('auth_token');
       if (!token) return;
       
-      const response = await fetch(\\\$\{API_URL\}/conversations', {
+      const response = await fetch(`${API_URL}/conversations`, {
         headers: { 'Authorization': `Bearer ${token}` },
       });
       

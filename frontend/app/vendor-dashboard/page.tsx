@@ -38,7 +38,7 @@ export default function VendorDashboardPage() {
       const token = localStorage.getItem('auth_token');
       
       // Load bookings
-      const bookingsRes = await fetch(\\\$\{API_URL\}/bookings', {
+      const bookingsRes = await fetch(`${API_URL}/bookings`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (bookingsRes.ok) {
@@ -47,7 +47,7 @@ export default function VendorDashboardPage() {
       }
 
       // Load vendor profile
-      const profileRes = await fetch(\\\$\{API_URL\}/my-vendor-profile', {
+      const profileRes = await fetch(`${API_URL}/my-vendor-profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (profileRes.ok) {

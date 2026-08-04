@@ -26,7 +26,7 @@ export default function ProfilePage() {
   const loadProfile = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(\\\$\{API_URL\}/user', {
+      const response = await fetch(`${API_URL}/user`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const user = await response.json();
@@ -50,7 +50,7 @@ export default function ProfilePage() {
 
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await fetch(\\\$\{API_URL\}/user/update', {
+      const response = await fetch(`${API_URL}/user/update`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
