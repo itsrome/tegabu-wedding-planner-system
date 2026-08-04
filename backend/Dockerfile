@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     libsqlite3-dev \
-    && docker-php-ext-install pdo pdo_sqlite \
+    libpq-dev \
+    && docker-php-ext-install pdo pdo_sqlite pdo_pgsql \
     && apt-get clean
 
 # Install Composer
@@ -22,7 +23,7 @@ COPY . .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Create SQLite database
+# Create SQLite database as fallback
 RUN touch database/database.sqlite
 
 # Cache config
@@ -32,5 +33,5 @@ RUN php artisan route:cache || true
 # Expose port
 EXPOSE 8000
 
-# Start command
+# Start command - supports both SQLite and PostgreSQL via DB_CONNECTION env var
 CMD php artisan config:clear && php artisan storage:link && php artisan migrate --force && php artisan db:seed --class=VendorSeeder --force && php artisan db:seed --class=AdminSeeder --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
