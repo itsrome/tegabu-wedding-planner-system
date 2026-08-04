@@ -104,33 +104,32 @@ export default function VendorCategoriesPage() {
       </nav>
 
       {/* Banner */}
-      <div className="bg-gradient-to-r from-pink-600 to-purple-600 py-16">
+      <div className="bg-gradient-to-r from-pink-600 to-purple-600 py-10 md:py-16">
         <div className="container mx-auto px-4 text-center text-white">
-          <h1 className="text-5xl font-bold mb-4">Find Your Perfect Vendors</h1>
-          <p className="text-xl opacity-90">Browse by category to find the best wedding professionals</p>
+          <h1 className="text-3xl md:text-5xl font-bold mb-3">Find Your Perfect Vendors</h1>
+          <p className="text-base md:text-xl opacity-90">Browse by category to find the best wedding professionals</p>
         </div>
       </div>
 
       {/* Categories Grid */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((category) => (
             <Link
               key={category.id}
               href={`/vendors-category/${category.id}`}
               className="group bg-white rounded-xl shadow-md hover:shadow-2xl transition-all overflow-hidden"
             >
-              <div className={`h-32 bg-gradient-to-br ${category.color} flex items-center justify-center text-6xl`}>
+              <div className={`h-24 md:h-32 bg-gradient-to-br ${category.color} flex items-center justify-center text-4xl md:text-6xl`}>
                 {category.icon}
               </div>
-              <div className="p-6">
-                <h3 className="text-2xl font-bold mb-2 group-hover:text-pink-600 transition-colors">
+              <div className="p-3 md:p-6">
+                <h3 className="text-base md:text-2xl font-bold mb-1 group-hover:text-pink-600 transition-colors">
                   {category.name}
                 </h3>
-                <p className="text-gray-600">{category.description}</p>
-                <div className="mt-4 text-pink-600 font-semibold flex items-center gap-2">
-                  Browse {category.name}
-                  <span className="group-hover:translate-x-1 transition-transform">→</span>
+                <p className="text-gray-600 text-xs md:text-base hidden md:block">{category.description}</p>
+                <div className="mt-2 text-pink-600 font-semibold text-xs md:text-base flex items-center gap-1">
+                  Browse <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </div>
               </div>
             </Link>

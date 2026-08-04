@@ -96,16 +96,16 @@ export default function Home() {
       {/* Main Banner */}
       <div className="container mx-auto px-4 py-16 text-center">
         <div className="max-w-4xl mx-auto">
-          <div className="text-6xl mb-6">💐✨💍</div>
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 bg-clip-text text-transparent leading-tight">
+          <div className="text-4xl md:text-6xl mb-6">💐✨💍</div>
+          <h1 className="text-3xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-rose-600 via-pink-600 to-purple-600 bg-clip-text text-transparent leading-tight">
             Your Dream Wedding Starts Here
           </h1>
-          <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
+          <p className="text-base md:text-xl text-gray-700 mb-8 max-w-2xl mx-auto">
             Welcome to Tegabu - where planning your perfect wedding is easy and fun
           </p>
           <Link
             href="/vendors-category"
-            className="inline-block bg-gradient-to-r from-rose-500 to-pink-500 text-white px-10 py-4 rounded-full text-lg font-semibold hover:shadow-2xl hover:scale-105 transition-all"
+            className="inline-block bg-gradient-to-r from-rose-500 to-pink-500 text-white px-8 md:px-10 py-3 md:py-4 rounded-full text-base md:text-lg font-semibold hover:shadow-2xl hover:scale-105 transition-all"
           >
             Browse Vendors by Category
           </Link>
@@ -140,57 +140,57 @@ export default function Home() {
           </div>
         )}
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {user ? (
             <>
-              <Link href="/dashboard" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-                <div className="text-5xl mb-4">📊</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">Dashboard</h3>
-                <p className="text-gray-600">View statistics and countdown</p>
+              <Link href="/dashboard" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">📊</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">Dashboard</h3>
+                <p className="text-gray-600 text-xs md:text-base">View statistics and countdown</p>
               </Link>
 
               {user?.role === 'vendor' && (
-                <Link href="/vendor-profile" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-                  <div className="text-5xl mb-4">🏪</div>
-                  <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">My Vendor Profile</h3>
-                  <p className="text-gray-600">Manage your business profile and packages</p>
+                <Link href="/vendor-profile" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+                  <div className="text-3xl md:text-5xl mb-2 md:mb-4">🏪</div>
+                  <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">My Vendor Profile</h3>
+                  <p className="text-gray-600 text-xs md:text-base">Manage your business profile and packages</p>
                 </Link>
               )}
 
-              <Link href="/vendors-category" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-                <div className="text-5xl mb-4">🎊</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">Vendor Categories</h3>
-                <p className="text-gray-600">Browse vendors by category</p>
+              <Link href="/vendors-category" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">🎊</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">Vendor Categories</h3>
+                <p className="text-gray-600 text-xs md:text-base">Browse vendors by category</p>
               </Link>
 
-              <Link href="/messages" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-                <div className="text-5xl mb-4">💬</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">Messages</h3>
-                <p className="text-gray-600">Chat with vendors and planners</p>
+              <Link href="/messages" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">💬</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">Messages</h3>
+                <p className="text-gray-600 text-xs md:text-base">Chat with vendors and planners</p>
               </Link>
 
-              <Link href="/guests" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-                <div className="text-5xl mb-4">👥</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">Guest List</h3>
-                <p className="text-gray-600">Manage RSVPs and guest details</p>
+              <Link href="/guests" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">👥</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">Guest List</h3>
+                <p className="text-gray-600 text-xs md:text-base">Manage RSVPs and guest details</p>
               </Link>
 
-              <Link href="/budget" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-                <div className="text-5xl mb-4">💰</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">Budget Tracker</h3>
-                <p className="text-gray-600">Track expenses and payments</p>
+              <Link href="/budget" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">💰</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">Budget Tracker</h3>
+                <p className="text-gray-600 text-xs md:text-base">Track expenses and payments</p>
               </Link>
 
-              <Link href="/tasks" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-                <div className="text-5xl mb-4">✓</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">Task Checklist</h3>
-                <p className="text-gray-600">Stay organized with to-do lists</p>
+              <Link href="/tasks" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">✓</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">Task Checklist</h3>
+                <p className="text-gray-600 text-xs md:text-base">Stay organized with to-do lists</p>
               </Link>
 
-              <Link href="/vendors" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
-                <div className="text-5xl mb-4">📋</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">My Vendors</h3>
-                <p className="text-gray-600">Your personal vendor contacts</p>
+              <Link href="/vendors" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1">
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">📋</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">My Vendors</h3>
+                <p className="text-gray-600 text-xs md:text-base">Your personal vendor contacts</p>
               </Link>
             </>
           ) : (
@@ -200,68 +200,68 @@ export default function Home() {
                 <div className="absolute top-2 right-2 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
                   Login Required
                 </div>
-                <div className="text-5xl mb-4 opacity-50">📊</div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">Dashboard</h3>
-                <p className="text-gray-600">View statistics and countdown</p>
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4 opacity-50">📊</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 text-gray-800">Dashboard</h3>
+                <p className="text-gray-600 text-xs md:text-base">View statistics and countdown</p>
               </div>
 
-              <Link href="/marketplace" className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 border-2 border-green-200 relative">
+              <Link href="/marketplace" className="group bg-white rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 border-2 border-green-200 relative">
                 <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
                   Public
                 </div>
-                <div className="text-5xl mb-4">🎊</div>
-                <h3 className="text-xl font-bold mb-2 group-hover:text-rose-600 transition-colors">Browse Vendors</h3>
-                <p className="text-gray-600">Explore our vendor marketplace</p>
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">🎊</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 group-hover:text-rose-600 transition-colors">Browse Vendors</h3>
+                <p className="text-gray-600 text-xs md:text-base">Explore our vendor marketplace</p>
               </Link>
 
               <div className="bg-white rounded-2xl p-8 shadow-lg relative">
                 <div className="absolute top-2 right-2 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
                   Login Required
                 </div>
-                <div className="text-5xl mb-4 opacity-50">💬</div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">Messages</h3>
-                <p className="text-gray-600">Chat with vendors and planners</p>
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4 opacity-50">💬</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 text-gray-800">Messages</h3>
+                <p className="text-gray-600 text-xs md:text-base">Chat with vendors and planners</p>
               </div>
 
               <div className="bg-white rounded-2xl p-8 shadow-lg relative">
                 <div className="absolute top-2 right-2 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
                   Login Required
                 </div>
-                <div className="text-5xl mb-4 opacity-50">👥</div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">Guest List</h3>
-                <p className="text-gray-600">Manage RSVPs and guest details</p>
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4 opacity-50">👥</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 text-gray-800">Guest List</h3>
+                <p className="text-gray-600 text-xs md:text-base">Manage RSVPs and guest details</p>
               </div>
 
               <div className="bg-white rounded-2xl p-8 shadow-lg relative">
                 <div className="absolute top-2 right-2 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
                   Login Required
                 </div>
-                <div className="text-5xl mb-4 opacity-50">💰</div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">Budget Tracker</h3>
-                <p className="text-gray-600">Track expenses and payments</p>
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4 opacity-50">💰</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 text-gray-800">Budget Tracker</h3>
+                <p className="text-gray-600 text-xs md:text-base">Track expenses and payments</p>
               </div>
 
               <div className="bg-white rounded-2xl p-8 shadow-lg relative">
                 <div className="absolute top-2 right-2 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
                   Login Required
                 </div>
-                <div className="text-5xl mb-4 opacity-50">✓</div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">Task Checklist</h3>
-                <p className="text-gray-600">Stay organized with to-do lists</p>
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4 opacity-50">✓</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 text-gray-800">Task Checklist</h3>
+                <p className="text-gray-600 text-xs md:text-base">Stay organized with to-do lists</p>
               </div>
 
               <div className="bg-white rounded-2xl p-8 shadow-lg relative">
                 <div className="absolute top-2 right-2 bg-rose-500 text-white text-xs px-2 py-1 rounded-full">
                   Login Required
                 </div>
-                <div className="text-5xl mb-4 opacity-50">📋</div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">My Vendors</h3>
-                <p className="text-gray-600">Your personal vendor contacts</p>
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4 opacity-50">📋</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2 text-gray-800">My Vendors</h3>
+                <p className="text-gray-600 text-xs md:text-base">Your personal vendor contacts</p>
               </div>
 
-              <Link href="/register" className="bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 text-white text-center flex flex-col items-center justify-center">
-                <div className="text-5xl mb-4">🎉</div>
-                <h3 className="text-xl font-bold mb-2">Get Started Free!</h3>
+              <Link href="/register" className="bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-4 md:p-8 shadow-lg hover:shadow-2xl transition-all hover:-translate-y-1 text-white text-center flex flex-col items-center justify-center">
+                <div className="text-3xl md:text-5xl mb-2 md:mb-4">🎉</div>
+                <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-2">Get Started Free!</h3>
                 <p className="opacity-90">Sign up to access all features</p>
               </Link>
             </>
@@ -279,7 +279,7 @@ export default function Home() {
               1
             </div>
             <h4 className="font-bold text-xl mb-2 text-gray-800">Sign Up</h4>
-            <p className="text-gray-600">Create your account for free</p>
+            <p className="text-gray-600 text-xs md:text-base">Create your account for free</p>
           </div>
 
           <div className="text-center">
@@ -287,7 +287,7 @@ export default function Home() {
               2
             </div>
             <h4 className="font-bold text-xl mb-2 text-gray-800">Plan</h4>
-            <p className="text-gray-600">Add your guest list and budget</p>
+            <p className="text-gray-600 text-xs md:text-base">Add your guest list and budget</p>
           </div>
 
           <div className="text-center">
@@ -295,7 +295,7 @@ export default function Home() {
               3
             </div>
             <h4 className="font-bold text-xl mb-2 text-gray-800">Find Vendors</h4>
-            <p className="text-gray-600">Browse and book the best vendors</p>
+            <p className="text-gray-600 text-xs md:text-base">Browse and book the best vendors</p>
           </div>
 
           <div className="text-center">
@@ -303,7 +303,7 @@ export default function Home() {
               4
             </div>
             <h4 className="font-bold text-xl mb-2 text-gray-800">Celebrate!</h4>
-            <p className="text-gray-600">Enjoy your perfect wedding day</p>
+            <p className="text-gray-600 text-xs md:text-base">Enjoy your perfect wedding day</p>
           </div>
         </div>
       </div>
